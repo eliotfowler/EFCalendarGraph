@@ -14,6 +14,9 @@
 		73B7D32C1B4B71570081BDF1 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 73B7D32B1B4B71570081BDF1 /* Images.xcassets */; };
 		73B7D32F1B4B71570081BDF1 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 73B7D32D1B4B71570081BDF1 /* LaunchScreen.xib */; };
 		73B7D33B1B4B71570081BDF1 /* EFCalendarGraphTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 73B7D33A1B4B71570081BDF1 /* EFCalendarGraphTests.m */; };
+		73B7D3461B4B71680081BDF1 /* EFCalendarGraph.m in Sources */ = {isa = PBXBuildFile; fileRef = 73B7D3451B4B71680081BDF1 /* EFCalendarGraph.m */; };
+		73B7D3491B4CBB540081BDF1 /* NSDate+Utilities.m in Sources */ = {isa = PBXBuildFile; fileRef = 73B7D3481B4CBB540081BDF1 /* NSDate+Utilities.m */; };
+		DEC118E79C529D7814961164 /* Pods_EFCalendarGraph.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AB1EEC452CA5AB51BE05D057 /* Pods_EFCalendarGraph.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -40,6 +43,13 @@
 		73B7D3341B4B71570081BDF1 /* EFCalendarGraphTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = EFCalendarGraphTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		73B7D3391B4B71570081BDF1 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		73B7D33A1B4B71570081BDF1 /* EFCalendarGraphTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EFCalendarGraphTests.m; sourceTree = "<group>"; };
+		73B7D3441B4B71680081BDF1 /* EFCalendarGraph.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EFCalendarGraph.h; sourceTree = "<group>"; };
+		73B7D3451B4B71680081BDF1 /* EFCalendarGraph.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EFCalendarGraph.m; sourceTree = "<group>"; };
+		73B7D3471B4CBB540081BDF1 /* NSDate+Utilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSDate+Utilities.h"; sourceTree = "<group>"; };
+		73B7D3481B4CBB540081BDF1 /* NSDate+Utilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSDate+Utilities.m"; sourceTree = "<group>"; };
+		7BEC80CF76536A64741D24AC /* Pods-EFCalendarGraph.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-EFCalendarGraph.release.xcconfig"; path = "Pods/Target Support Files/Pods-EFCalendarGraph/Pods-EFCalendarGraph.release.xcconfig"; sourceTree = "<group>"; };
+		AB1EEC452CA5AB51BE05D057 /* Pods_EFCalendarGraph.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_EFCalendarGraph.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		D05090B13517157AB1746678 /* Pods-EFCalendarGraph.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-EFCalendarGraph.debug.xcconfig"; path = "Pods/Target Support Files/Pods-EFCalendarGraph/Pods-EFCalendarGraph.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -47,6 +57,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DEC118E79C529D7814961164 /* Pods_EFCalendarGraph.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -66,6 +77,8 @@
 				73B7D31D1B4B71570081BDF1 /* EFCalendarGraph */,
 				73B7D3371B4B71570081BDF1 /* EFCalendarGraphTests */,
 				73B7D31C1B4B71570081BDF1 /* Products */,
+				EB32611F96A39683EEA7AD23 /* Pods */,
+				D65F9E168F3FA73E5E61152A /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -89,6 +102,10 @@
 				73B7D32B1B4B71570081BDF1 /* Images.xcassets */,
 				73B7D32D1B4B71570081BDF1 /* LaunchScreen.xib */,
 				73B7D31E1B4B71570081BDF1 /* Supporting Files */,
+				73B7D3441B4B71680081BDF1 /* EFCalendarGraph.h */,
+				73B7D3451B4B71680081BDF1 /* EFCalendarGraph.m */,
+				73B7D3471B4CBB540081BDF1 /* NSDate+Utilities.h */,
+				73B7D3481B4CBB540081BDF1 /* NSDate+Utilities.m */,
 			);
 			path = EFCalendarGraph;
 			sourceTree = "<group>";
@@ -119,6 +136,23 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
+		D65F9E168F3FA73E5E61152A /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				AB1EEC452CA5AB51BE05D057 /* Pods_EFCalendarGraph.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		EB32611F96A39683EEA7AD23 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				D05090B13517157AB1746678 /* Pods-EFCalendarGraph.debug.xcconfig */,
+				7BEC80CF76536A64741D24AC /* Pods-EFCalendarGraph.release.xcconfig */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -126,9 +160,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 73B7D33E1B4B71570081BDF1 /* Build configuration list for PBXNativeTarget "EFCalendarGraph" */;
 			buildPhases = (
+				48B0513262CA495D648E9270 /* Check Pods Manifest.lock */,
 				73B7D3171B4B71570081BDF1 /* Sources */,
 				73B7D3181B4B71570081BDF1 /* Frameworks */,
 				73B7D3191B4B71570081BDF1 /* Resources */,
+				4DE10EC2B5A2CE7FF8FA71BB /* Embed Pods Frameworks */,
+				57A8262D489BEF80229A825D /* Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -213,6 +250,54 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		48B0513262CA495D648E9270 /* Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+		4DE10EC2B5A2CE7FF8FA71BB /* Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Embed Pods Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-EFCalendarGraph/Pods-EFCalendarGraph-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		57A8262D489BEF80229A825D /* Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-EFCalendarGraph/Pods-EFCalendarGraph-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		73B7D3171B4B71570081BDF1 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -221,6 +306,8 @@
 				73B7D3271B4B71570081BDF1 /* ViewController.m in Sources */,
 				73B7D3241B4B71570081BDF1 /* AppDelegate.m in Sources */,
 				73B7D3211B4B71570081BDF1 /* main.m in Sources */,
+				73B7D3461B4B71680081BDF1 /* EFCalendarGraph.m in Sources */,
+				73B7D3491B4CBB540081BDF1 /* NSDate+Utilities.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -346,6 +433,7 @@
 		};
 		73B7D33F1B4B71570081BDF1 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = D05090B13517157AB1746678 /* Pods-EFCalendarGraph.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				INFOPLIST_FILE = EFCalendarGraph/Info.plist;
@@ -356,6 +444,7 @@
 		};
 		73B7D3401B4B71570081BDF1 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 7BEC80CF76536A64741D24AC /* Pods-EFCalendarGraph.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				INFOPLIST_FILE = EFCalendarGraph/Info.plist;
@@ -417,6 +506,7 @@
 				73B7D3401B4B71570081BDF1 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		73B7D3411B4B71570081BDF1 /* Build configuration list for PBXNativeTarget "EFCalendarGraphTests" */ = {
 			isa = XCConfigurationList;
@@ -425,6 +515,7 @@
 				73B7D3431B4B71570081BDF1 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
