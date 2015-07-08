@@ -1,0 +1,6 @@
+framework module Pods_EFCalendarGraph {
+  umbrella header "Pods-EFCalendarGraph-umbrella.h"
+
+  export *
+  module * { export * }
+}
