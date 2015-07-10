@@ -24,8 +24,8 @@
     // Do any additional setup after loading the view, typically from a nib.
     self.calendarGraph = [[EFCalendarGraph alloc] initForAutoLayout];
     [self.view addSubview:self.calendarGraph];
-    [self.calendarGraph autoPinEdgeToSuperviewEdge:ALEdgeLeft];
-    [self.calendarGraph autoPinEdgeToSuperviewEdge:ALEdgeRight];
+    [self.calendarGraph autoPinEdgeToSuperviewEdge:ALEdgeLeft withInset:20];
+    [self.calendarGraph autoPinEdgeToSuperviewEdge:ALEdgeRight withInset:20];
     [self.calendarGraph autoSetDimension:ALDimensionHeight toSize:120];
     [self.calendarGraph autoAlignAxis:ALAxisHorizontal toSameAxisOfView:self.view];
 }

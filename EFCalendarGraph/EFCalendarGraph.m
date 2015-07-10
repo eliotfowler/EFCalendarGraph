@@ -9,7 +9,7 @@
 #import "EFCalendarGraph.h"
 #import "NSDate+Utilities.h"
 
-const CGFloat EFCalendarGraphMinBoxSideLength = 3;
+const CGFloat EFCalendarGraphMinBoxSideLength = 1;
 const CGFloat EFCalendarGraphInterBoxMargin = 1;
 const NSInteger EFCalendarGraphDaysInWeek = 7;
 
@@ -21,9 +21,11 @@ const NSInteger EFCalendarGraphDaysInWeek = 7;
 
 // Private properties
 @property (nonatomic, strong) NSArray *values;
+@property (nonatomic, strong) NSArray *layers;
+@property (nonatomic, strong) NSArray *dataByColumns;
+@property (nonatomic, strong) NSArray *layersByColumns;
 @property (nonatomic, strong) NSDate *startDate;
 @property (nonatomic, strong) NSDate *endDate;
-@property (nonatomic, strong) NSArray *dataByColumns;
 
 @property (nonatomic, assign, readonly) CGFloat minWidth;
 @property (nonatomic, assign, readonly) CGFloat minHeight;
@@ -54,13 +56,26 @@ const NSInteger EFCalendarGraphDaysInWeek = 7;
     return self;
 }
 
+- (instancetype)initWithStartDate:(NSDate *)startDate endDate:(NSDate *)endDate data:(NSArray *)data
+{
+    if ((self = [super initWithFrame:CGRectZero]))
+    {
+        self.values = data;
+        self.startDate = startDate;
+        self.endDate = endDate;
+        [self initialize];
+    }
+    return self;
+}
+
 - (void)initialize
 {
     // Fake Data
     NSMutableArray *values = [NSMutableArray array];
     for (int i = 0; i < 365; i++)
     {
-        [values addObject:@(arc4random() % 5)];
+        
+        [values addObject:arc4random() % 2 == 0 ? @0 : @(arc4random() % 5)];
     }
     self.values = values;
     
@@ -77,41 +92,59 @@ const NSInteger EFCalendarGraphDaysInWeek = 7;
     self.dataByColumns = columnData;
     
     // Defaults
-    self.backgroundColor = [UIColor lightGrayColor];
+    self.backgroundColor = [UIColor clearColor];
     self.borderColor = [UIColor blackColor];
     self.borderWidth = 2;
     self.startDate = [NSDate new];
+    
+    [self createBoxes];
 }
 
-- (void)drawRect:(CGRect)rect
+-(void)layoutSubviews
 {
-    [self drawBoxes];
+    [super layoutSubviews];
+    
+    for (int i = 0; i < self.layers.count; i++)
+    {
+        CALayer *layer = self.layers[i];
+        layer.frame = [self rectForBoxWithDaysAfterStartDate:i];
+    }
 }
 
-#pragma mark - Drawing
+#pragma mark - UI Creation
 
-- (void)drawBoxes
+- (void)createBoxes
 {
+    NSMutableArray *layers = [NSMutableArray array];
+    NSMutableArray *layersByColumns = [NSMutableArray array];
     for (int i = 0; i < self.dataByColumns.count; i++)
     {
+        NSMutableArray *column = [NSMutableArray array];
         for (int j = 0; j < EFCalendarGraphDaysInWeek; j++)
         {
+            CALayer *layer = [CALayer layer];
+            CGRect boxFrame = [self rectForBoxWithDaysAfterStartDate:i * EFCalendarGraphDaysInWeek + j];
+            layer.frame = boxFrame;
+            
             NSInteger value = [self.dataByColumns[i][j] integerValue];
             if (value > 0)
             {
-                CGRect boxFrame = [self rectForBoxWithDaysAfterStartDate:i * EFCalendarGraphDaysInWeek + j];
                 CGFloat alpha = value * .1 + .1;
-                [[UIColor colorWithRed:0 green:1 blue:0 alpha:alpha] setFill];
-                UIRectFillUsingBlendMode(boxFrame, kCGBlendModeNormal);
+                layer.backgroundColor = [UIColor colorWithRed:0 green:1 blue:0 alpha:alpha].CGColor;
             }
             else
             {
-                CGRect boxFrame = [self rectForBoxWithDaysAfterStartDate:i * EFCalendarGraphDaysInWeek + j];
-                [[UIColor colorWithRed:.9 green:.9 blue:.9 alpha:.5] setFill];
-                UIRectFillUsingBlendMode(boxFrame, kCGBlendModeNormal);
+                layer.backgroundColor = [UIColor colorWithRed:.9 green:.9 blue:.9 alpha:.5].CGColor;
             }
+            [self.layer addSublayer:layer];
+            [layers addObject:layer];
+            [column addObject:layer];
         }
+        [layersByColumns addObject:column];
     }
+    
+    self.layers = [layers copy];
+    self.layersByColumns = [layersByColumns copy];
 }
 
 #pragma mark - Helpers
@@ -125,6 +158,7 @@ const NSInteger EFCalendarGraphDaysInWeek = 7;
                 self.boxSize.width * column +
                 EFCalendarGraphInterBoxMargin * column +
                 self.borderWidth;
+    NSLog(@"%f", CGRectGetMinY(frame));
     CGFloat y = CGRectGetMinY(frame) +
                 self.boxSize.height * row +
                 EFCalendarGraphInterBoxMargin * row +
@@ -136,7 +170,7 @@ const NSInteger EFCalendarGraphDaysInWeek = 7;
 {
     // 1 is Sunday and I want 0 to be Sunday
     NSInteger startDateWeekOffset = self.startDate.weekday - 1;
-    return (daysAfterStartDate + startDateWeekOffset) / EFCalendarGraphDaysInWeek;
+    return (daysAfterStartDate + startDateWeekOffset) / EFCalendarGraphDaysInWeek - 1;
 }
 
 - (NSInteger)rowForDaysAfterStartDate:(NSInteger)daysAfterStartDate
@@ -144,13 +178,18 @@ const NSInteger EFCalendarGraphDaysInWeek = 7;
     NSDate *rowDate = [self.startDate dateByAddingDays:daysAfterStartDate];
     
     // 1 is Sunday and I want 0 to be Sunday
-    return rowDate.weekday;
+    return rowDate.weekday - 1;
 }
 
 #pragma mark - Read-only property getters
 
 - (CGRect)frameForViewInBounds
 {
+    if (CGRectEqualToRect(self.bounds, CGRectZero))
+    {
+        return CGRectZero;
+    }
+    
     CGFloat width = self.minWidth;
     CGFloat height = self.minHeight;
     CGFloat x = 0;
@@ -159,24 +198,18 @@ const NSInteger EFCalendarGraphDaysInWeek = 7;
     if (width > height && width < CGRectGetWidth(self.bounds))
     {
         width = CGRectGetWidth(self.bounds);
-        CGFloat boxWidth = (width -
-                            EFCalendarGraphInterBoxMargin * (self.columns - 1) -
-                            self.borderWidth * 2) / self.columns;
+        CGFloat boxWidth = [self boxWidthBasedOnBoundsWidth:width];
         height = 2 * self.borderWidth +
-        EFCalendarGraphDaysInWeek * boxWidth +
-        (self.rows - 1) * EFCalendarGraphInterBoxMargin;
+                 EFCalendarGraphDaysInWeek * boxWidth +
+                 (self.rows - 1) * EFCalendarGraphInterBoxMargin;
     }
     else if (height > width && height < CGRectGetHeight(self.bounds))
     {
-        NSAssert(false, @"Bad");
-        CGFloat heightDifference = CGRectGetHeight(self.bounds) - height;
-        height += heightDifference;
-        CGFloat boxHeight = (height -
-                             (EFCalendarGraphDaysInWeek - 1) * EFCalendarGraphInterBoxMargin -
-                             self.borderWidth * 2) / self.rows;
+        height = CGRectGetHeight(self.bounds);
+        CGFloat boxHeight = [self boxHeightBasedOnBoundsHeight:height];
         width = 2 * self.borderWidth +
-        self.dataByColumns.count * boxHeight +
-        self.dataByColumns.count - 1 * EFCalendarGraphInterBoxMargin;
+                self.dataByColumns.count * boxHeight +
+                self.dataByColumns.count - 1 * EFCalendarGraphInterBoxMargin;
     }
     
     // Now that we know for sure that one of the edges is touching its bounds edge,
@@ -196,17 +229,27 @@ const NSInteger EFCalendarGraphDaysInWeek = 7;
     return CGRectMake(x, y, width, height);
 }
 
+- (CGFloat)boxWidthBasedOnBoundsWidth:(CGFloat)width
+{
+    return MAX((width -
+                EFCalendarGraphInterBoxMargin * (self.columns - 1) -
+                self.borderWidth * 2) / self.columns, EFCalendarGraphMinBoxSideLength);
+}
+
+- (CGFloat)boxHeightBasedOnBoundsHeight:(CGFloat)height
+{
+    return MAX((height -
+                EFCalendarGraphInterBoxMargin * (self.rows - 1) -
+                self.borderWidth * 2) / self.rows, EFCalendarGraphMinBoxSideLength);
+}
+
 - (CGSize)boxSize
 {
     CGRect frame = self.frameForViewInBounds;
-    CGFloat width = (CGRectGetWidth(frame) -
-                    EFCalendarGraphInterBoxMargin * (self.columns - 1) -
-                    self.borderWidth * 2) / self.columns;
-    CGFloat height = (CGRectGetHeight(frame) -
-                     (self.rows - 1) * EFCalendarGraphInterBoxMargin -
-                     self.borderWidth * 2) / self.rows;
-    
-    NSAssert(width == height, @"Box should be square");
+    CGFloat width = [self boxWidthBasedOnBoundsWidth:CGRectGetWidth(frame)];
+    CGFloat height = [self boxHeightBasedOnBoundsHeight:CGRectGetHeight(frame)];
+
+    NSAssert(width == height, @"Box not square; width: %f, height: %f", width, height);
     
     return CGSizeMake(width, height);
 }
@@ -227,18 +270,7 @@ const NSInteger EFCalendarGraphDaysInWeek = 7;
 
 - (NSInteger)columns
 {
-    for (int i = ((int)self.dataByColumns.count - 1); i >= 0; i--)
-    {
-        for (int j = EFCalendarGraphDaysInWeek - 1; j >= 0; j--)
-        {
-            if ([self.dataByColumns[i][j] integerValue] > 0)
-            {
-                return [self columnForDaysAfterStartDate:i * EFCalendarGraphDaysInWeek + j] + 1;
-            }
-        }
-    }
-    
-    return -1;
+    return [self columnForDaysAfterStartDate:(self.dataByColumns.count - 1) * EFCalendarGraphDaysInWeek + EFCalendarGraphDaysInWeek - 1] + 1;
 }
 
 - (NSInteger)rows
