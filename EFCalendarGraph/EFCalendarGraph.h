@@ -9,8 +9,7 @@
 #import <UIKit/UIKit.h>
 
 typedef NS_ENUM(NSUInteger, EFCalendarGraphSquareModifier) {
-    EFCalendarGraphSquareModifierAlpha = 0,
-    EFCalendarGraphSquareModifierColor
+    EFCalendarGraphSquareModifierAlpha = 0
 };
 
 @protocol EFCalendarGraphDataSource;
@@ -31,6 +30,10 @@ IB_DESIGNABLE
 
 @end
 
+/**
+ * The `EFCalendarGraphDataSource` protocol defines required methods
+ * that the graph uses to draw itself.
+ */
 @protocol EFCalendarGraphDataSource <NSObject>
 
 - (NSUInteger)numberOfDataPointsInCalendarGraph:(EFCalendarGraph *)calendarGraph;

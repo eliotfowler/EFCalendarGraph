@@ -39,3 +39,15 @@ will produce this:
 or with 365 days:
 
 ![365 Days Calendar Graph](https://github.com/eliotfowler/EFCalendarGraph/blob/master/Images/365Days.png)
+
+Also, note that I am uploading this on a Monday. Since we are setting this up with an end date `initWithEndDate...`, you'll see the last box is the second from the top. The days start with Sunday at the top and each day follows normally. This will be configurable in the future.
+
+Installation
+------------
+
+Until the first CocoaPods release, clone the project and copy the EFCalendarGraph/NSDate+Utilities.{h,m} files into your project.
+
+Options
+---------------
+
+
