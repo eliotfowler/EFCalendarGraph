@@ -25,7 +25,7 @@
 
     // Fake Data
     NSMutableArray *values = [NSMutableArray array];
-    for (int i = 0; i < 365; i++)
+    for (int i = 0; i < 14; i++)
     {
         [values addObject:arc4random() % 2 == 0 ? @0 : @(arc4random() % 5)];
     }
@@ -35,14 +35,9 @@
     
     self.calendarGraph = [[EFCalendarGraph alloc] initWithEndDate:endDate];
     self.calendarGraph.dataSource = self;
-    self.calendarGraph.baseColor = [UIColor blueColor];
-    self.calendarGraph.translatesAutoresizingMaskIntoConstraints = NO;
     [self.view addSubview:self.calendarGraph];
-    [self.calendarGraph autoPinEdgeToSuperviewEdge:ALEdgeLeft withInset:20];
-    [self.calendarGraph autoPinEdgeToSuperviewEdge:ALEdgeRight withInset:20];
-    [self.calendarGraph autoSetDimension:ALDimensionHeight toSize:120];
-    [self.calendarGraph autoAlignAxis:ALAxisHorizontal toSameAxisOfView:self.view];
-    
+    self.calendarGraph.frame = CGRectMake(20, CGRectGetHeight(self.view.bounds)/2 - 60, CGRectGetWidth(self.view.bounds) - 40, 120);
+   
     [self.calendarGraph reloadData];
 }
 
