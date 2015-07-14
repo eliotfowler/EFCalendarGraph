@@ -34,5 +34,5 @@ daysAfterStartDate:(NSUInteger)daysAfterStartDate
 
 will produce this:
 
-![14 Days Calendar Graph](/Users/eliot/Code/EFCalendarGraph/Images/14Days.png)
+![14 Days Calendar Graph](https://github.com/eliotfowler/EFCalendarGraph/blob/master/Images/14Days.png)
 
