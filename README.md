@@ -27,7 +27,7 @@ This code:
 daysAfterStartDate:(NSUInteger)daysAfterStartDate
  daysBeforeEndDate:(NSUInteger)daysBeforeEndDate
 {
-    return @[@0, @1, @2, @3, @4, @5, @6, @0, @1, @2, @3, @4, @5, @6];
+    return arc4random() % 2 == 0 ? @0 : @(arc4random() % 5;
 }
 
 ~~~
