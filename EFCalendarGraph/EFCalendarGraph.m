@@ -13,7 +13,7 @@ const CGFloat EFCalendarGraphMinBoxSideLength = 3;
 const CGFloat EFCalendarGraphInterBoxMargin = 1;
 const NSInteger EFCalendarGraphDaysInWeek = 7;
 
-@interface EFCalendarGraph ()
+@interface EFCalendarGraph () <EFCalendarGraphDataSource>
 
 // Public properties
 @property (nonatomic, strong) UIColor *borderColor;
@@ -24,7 +24,9 @@ const NSInteger EFCalendarGraphDaysInWeek = 7;
 @property (nonatomic, strong) NSArray *layers;
 @property (nonatomic, strong) NSArray *dataByColumns;
 @property (nonatomic, strong) NSArray *layersByColumns;
-
+@property (nonatomic, strong) NSDate *endDate;
+@property (nonatomic, strong) NSDate *startDate;
+//@property (nonatomic, strong) NSArray *values;
 
 @property (nonatomic, assign, readonly) CGFloat minWidth;
 @property (nonatomic, assign, readonly) CGFloat minHeight;
@@ -32,72 +34,54 @@ const NSInteger EFCalendarGraphDaysInWeek = 7;
 @property (nonatomic, assign, readonly) CGSize boxSize;
 @property (nonatomic, assign, readonly) NSInteger columns;
 @property (nonatomic, assign, readonly) NSInteger rows;
+@property (nonatomic, strong, readonly) id minValue;
+@property (nonatomic, strong, readonly) id maxValue;
 
 @end
 
-@implementation EFCalendarGraph
+@implementation EFCalendarGraph {
+    NSDate *_startDate;
+    id _minValue;
+    id _maxValue;
+}
 
 - (id)initWithCoder:(NSCoder *)aDecoder
 {
-    self = [self initWithStartDate:nil data:nil];
+    if ((self = [super initWithCoder:aDecoder]))
+    {
+        [self initialize];
+    }
     return self;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
 {
-    self = [self initWithStartDate:nil data:nil];
+    self = [self initWithStartDate:nil];
     return self;
 }
 
-- (instancetype)initWithStartDate:(NSDate *)startDate data:(NSArray *)data
+- (instancetype)initWithStartDate:(NSDate *)startDate
 {
     if ((self = [super initWithFrame:CGRectZero]))
     {
-        _values = data;
         _startDate = startDate;
         [self initialize];
     }
     return self;
 }
 
-- (instancetype)initWithEndDate:(NSDate *)endDate data:(NSArray *)data
+- (instancetype)initWithEndDate:(NSDate *)endDate
 {
-    NSDate *startDate = [endDate dateBySubtractingDays:data.count];
-    self = [self initWithStartDate:startDate data:data];
+    if ((self = [super initWithFrame:CGRectZero]))
+    {
+        _endDate = endDate;
+        [self initialize];
+    }
     return self;
-}
-
-- (void)prepareForInterfaceBuilder
-{
-    // Fake Data
-    NSMutableArray *values = [NSMutableArray array];
-    for (int i = 0; i < 100; i++)
-    {
-        [values addObject:arc4random() % 2 == 0 ? @0 : @(arc4random() % 5)];
-    }
-    NSDate *startDate = [NSDate new];
-
-    _values = values;
-    _startDate = startDate;
-    
-    NSMutableArray *columnData = [NSMutableArray array];
-    for (int i = 0; i < self.values.count / EFCalendarGraphDaysInWeek; i++)
-    {
-        NSMutableArray *rowData = [NSMutableArray array];
-        for (int j = 0; j < EFCalendarGraphDaysInWeek; j++)
-        {
-            [rowData addObject:self.values[i * EFCalendarGraphDaysInWeek + j]];
-        }
-        [columnData addObject:rowData];
-    }
-    self.dataByColumns = columnData;
-    [self initialize];
 }
 
 - (void)initialize
 {
-    self.values = _values;
-    
     // Defaults
     self.backgroundColor = [UIColor clearColor];
     
@@ -111,9 +95,29 @@ const NSInteger EFCalendarGraphDaysInWeek = 7;
         self.borderWidth = 2;
     }
     
-    if (!self.self.startDate)
+    if (!self.startDate)
     {
         self.startDate = [NSDate new];
+    }
+    
+    if (!self.zeroColor)
+    {
+        self.zeroColor = [UIColor colorWithRed:.9 green:.9 blue:.9 alpha:.5];
+    }
+    
+    if (!self.baseColor)
+    {
+        self.baseColor = [UIColor colorWithRed:0 green:1 blue:0 alpha:1];
+    }
+    
+    if (!self.squareModifier)
+    {
+        self.squareModifier = EFCalendarGraphSquareModifierAlpha;
+    }
+    
+    if (!self.modifierDenominations)
+    {
+        self.modifierDenominations = @[@.3, @.4, @.5, @.6, @.7, @.9];
     }
 }
 
@@ -128,35 +132,55 @@ const NSInteger EFCalendarGraphDaysInWeek = 7;
     }
 }
 
-- (void)setValues:(NSArray *)values
-{
-    _values = values;
-    
-    NSMutableArray *columnData = [NSMutableArray array];
-    for (int i = 0; i < _values.count / EFCalendarGraphDaysInWeek; i++)
-    {
-        NSMutableArray *rowData = [NSMutableArray array];
-        for (int j = 0; j < EFCalendarGraphDaysInWeek; j++)
-        {
-            [rowData addObject:_values[i * EFCalendarGraphDaysInWeek + j]];
-        }
-        [columnData addObject:rowData];
-    }
-    self.dataByColumns = [columnData copy];
-    
-    [self createBoxes];
-}
+#pragma mark - Overrides
 
--(void)setStartDate:(NSDate *)startDate
+- (void)setStartDate:(NSDate *)startDate
 {
     _startDate = startDate;
-    [self createBoxes];
+    [self reloadData];
 }
 
-#pragma mark - UI Creation
-
-- (void)createBoxes
+- (NSDate *)startDate
 {
+    if (!_startDate && _endDate)
+    {
+        NSUInteger numberOfDataPoints = [self.dataSource numberOfDataPointsInCalendarGraph:self];
+        _startDate = [_endDate dateBySubtractingDays:numberOfDataPoints-1];
+    }
+    return _startDate;
+}
+
+- (NSArray *)dataByColumns
+{
+    if (!_dataByColumns)
+    {
+        NSMutableArray *columnData = [NSMutableArray array];
+        NSUInteger numberOfDataPoints = [self.dataSource numberOfDataPointsInCalendarGraph:self];
+        for (int i = 0; i < numberOfDataPoints / EFCalendarGraphDaysInWeek; i++)
+        {
+            NSMutableArray *rowData = [NSMutableArray array];
+            for (int j = 0; j < EFCalendarGraphDaysInWeek; j++)
+            {
+                id dataPoint = [self valueForDaysAfterStartDate:i * EFCalendarGraphDaysInWeek + j];
+                [rowData addObject:dataPoint];
+            }
+            [columnData addObject:rowData];
+        }
+        
+        _dataByColumns = [columnData copy];
+    }
+    
+    return _dataByColumns;
+}
+
+#pragma mark - Public methods
+
+- (void)reloadData
+{
+#if !TARGET_INTERFACE_BUILDER
+    _dataByColumns = nil;
+#endif
+    
     for(CALayer *layer in self.layer.sublayers)
     {
         [layer removeFromSuperlayer];
@@ -173,15 +197,19 @@ const NSInteger EFCalendarGraphDaysInWeek = 7;
             CGRect boxFrame = [self rectForBoxWithDaysAfterStartDate:i * EFCalendarGraphDaysInWeek + j];
             layer.frame = boxFrame;
             
-            NSInteger value = [self.dataByColumns[i][j] integerValue];
+            CGFloat value = [self.dataByColumns[i][j] floatValue];
             if (value > 0)
             {
-                CGFloat alpha = value * .1 + .1;
-                layer.backgroundColor = [UIColor colorWithRed:0 green:1 blue:0 alpha:alpha].CGColor;
+                CGFloat maxValue = [self.maxValue floatValue];
+                CGFloat minValue = [self.minValue floatValue];
+                CGFloat valuePerDenomination = ((maxValue - minValue + 1) / self.modifierDenominations.count);
+                NSUInteger denominationIndex = value / valuePerDenomination - 1;
+                CGFloat alpha = [self.modifierDenominations[denominationIndex] floatValue];
+                layer.backgroundColor = [self.baseColor colorWithAlphaComponent:alpha].CGColor;
             }
             else
             {
-                layer.backgroundColor = [UIColor colorWithRed:.9 green:.9 blue:.9 alpha:.5].CGColor;
+                layer.backgroundColor = self.zeroColor.CGColor;
             }
             [self.layer addSublayer:layer];
             [layers addObject:layer];
@@ -225,6 +253,15 @@ const NSInteger EFCalendarGraphDaysInWeek = 7;
     
     // 1 is Sunday and I want 0 to be Sunday
     return rowDate.weekday - 1;
+}
+
+- (id)valueForDaysAfterStartDate:(NSUInteger)daysAfterStartDate
+{
+    NSDate *date = [self.startDate dateByAddingDays:daysAfterStartDate];
+    NSUInteger daysBeforeEnd = [date daysBeforeDate:self.endDate];
+    return [self.dataSource calendarGraph:self valueForDate:date
+                       daysAfterStartDate:daysAfterStartDate
+                        daysBeforeEndDate:daysBeforeEnd];
 }
 
 #pragma mark - Read-only property getters
@@ -317,12 +354,92 @@ const NSInteger EFCalendarGraphDaysInWeek = 7;
 - (NSInteger)columns
 {
     return [self columnForDaysAfterStartDate:(self.dataByColumns.count - 1) * EFCalendarGraphDaysInWeek + EFCalendarGraphDaysInWeek - 1] + 1;
-//    return self.dataByColumns.count;
 }
 
 - (NSInteger)rows
 {
     return EFCalendarGraphDaysInWeek;
+}
+
+- (id)minValue
+{
+    if (!_minValue)
+    {
+        id minValue = @(MAXFLOAT);
+        NSUInteger numberOfDataPoints = [self.dataSource numberOfDataPointsInCalendarGraph:self];
+        for (int i = 0; i < numberOfDataPoints; i++)
+        {
+            id value = [self valueForDaysAfterStartDate:i];
+            if ([value floatValue] < [minValue floatValue] && [value floatValue] > 0)
+            {
+                minValue = value;
+            }
+        }
+        _minValue = minValue;
+    }
+    
+    return _minValue;
+}
+
+- (id)maxValue
+{
+    if (!_maxValue)
+    {
+        id maxValue = @(0);
+        NSUInteger numberOfDataPoints = [self.dataSource numberOfDataPointsInCalendarGraph:self];
+        for (int i = 0; i < numberOfDataPoints; i++)
+        {
+            id value = [self valueForDaysAfterStartDate:i];
+            if ([value floatValue] > [maxValue floatValue])
+            {
+                maxValue = value;
+            }
+        }
+        _maxValue = maxValue;
+    }
+    
+    return _maxValue;
+}
+
+#pragma mark - For Storyboards
+
+- (void)prepareForInterfaceBuilder
+{
+    // Fake Data
+    NSMutableArray *values = [NSMutableArray array];
+    for (int i = 0; i < 365; i++)
+    {
+        [values addObject:arc4random() % 2 == 0 ? @0 : @(arc4random() % 5)];
+    }
+    
+    NSMutableArray *columnData = [NSMutableArray array];
+    for (int i = 0; i < values.count / EFCalendarGraphDaysInWeek; i++)
+    {
+        NSMutableArray *rowData = [NSMutableArray array];
+        for (int j = 0; j < EFCalendarGraphDaysInWeek; j++)
+        {
+            id dataPoint = values[i * EFCalendarGraphDaysInWeek + j];
+            [rowData addObject:dataPoint];
+        }
+        [columnData addObject:rowData];
+    }
+    
+    self.dataByColumns = [columnData copy];
+    
+    self.dataSource = self;
+    [self reloadData];
+}
+
+- (id)calendarGraph:(EFCalendarGraph *)calendarGraph valueForDate:(NSDate *)date daysAfterStartDate:(NSUInteger)daysAfterStartDate daysBeforeEndDate:(NSUInteger)daysBeforeEndDate
+{
+    NSUInteger i = daysAfterStartDate / EFCalendarGraphDaysInWeek;
+    NSUInteger j = daysAfterStartDate % EFCalendarGraphDaysInWeek;
+    return self.dataByColumns[i][j];
+}
+
+- (NSUInteger)numberOfDataPointsInCalendarGraph:(EFCalendarGraph *)calendarGraph
+{
+    return self.dataByColumns.count;
 }
 
 @end
