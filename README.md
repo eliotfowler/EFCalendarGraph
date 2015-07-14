@@ -36,3 +36,6 @@ will produce this:
 
 ![14 Days Calendar Graph](https://github.com/eliotfowler/EFCalendarGraph/blob/master/Images/14Days.png)
 
+or with 365 days:
+
+![365 Days Calendar Graph](https://github.com/eliotfowler/EFCalendarGraph/blob/master/Images/365Days.png)

@@ -25,7 +25,7 @@
 
     // Fake Data
     NSMutableArray *values = [NSMutableArray array];
-    for (int i = 0; i < 14; i++)
+    for (int i = 0; i < 365; i++)
     {
         [values addObject:arc4random() % 2 == 0 ? @0 : @(arc4random() % 5)];
     }
