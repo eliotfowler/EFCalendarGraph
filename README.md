@@ -73,21 +73,21 @@ This is the method where you will return the data points for each square when re
 Options
 -------
 
-###Properties
+###Properties (default)
 
-####squareModifier:(EFCalendarGraphSquareModifier) - Default: EFCalendarGraphSquareModifierAlpha
+####EFCalendarGraphSquareModifier squareModifier (EFCalendarGraphSquareModifierAlpha)
 
 Currently the only value, setting this to EFCalendarGraphSquareModifierAlpha will cause variance in value to change the alpha of each of the boxes.
 
-####modifierDenominations:(NSArray *) - Default: @[@.3, @.4, @.5, @.6, @.7, @.9]
+####NSArray *modifierDenominations (@[@.3, @.4, @.5, @.6, @.7, @.9])
 
 Seemingly random, but this set of numbers seems to work fairly well for most data sets that I've encountered so far. You can set this array to any set of numbers between 0 and 1. It does not have to be 6 numbers either, you can have as many or as few as you want.
 
-####baseColor:(UIColor *) - Default: [UIColor greenColor]
+####UIColor *baseColor ([UIColor greenColor])
 
 This is the color that will fill the squares.
 
-####zeroColor:(UIColor *) - Default: [UIColor colorWithRed:.9 green:.9 blue:.9 alpha:.5];
+####UIColor *zeroColor ([UIColor colorWithRed:.9 green:.9 blue:.9 alpha:.5])
 
 This is the color that the boxes will be when the value for the box is 0.
 
