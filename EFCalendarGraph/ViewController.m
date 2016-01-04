@@ -8,7 +8,6 @@
 
 #import "ViewController.h"
 #import "EFCalendarGraph.h"
-#import "PureLayout.h"
 #import "NSDate+Utilities.h"
 
 @interface ViewController () <EFCalendarGraphDataSource>

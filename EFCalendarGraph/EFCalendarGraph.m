@@ -83,7 +83,7 @@ const NSInteger EFCalendarGraphDaysInWeek = 7;
 - (void)initialize
 {
     // Defaults
-    self.backgroundColor = [UIColor clearColor];
+    self.backgroundColor = [UIColor redColor];
     
     if (!self.borderColor)
     {
@@ -173,6 +173,11 @@ const NSInteger EFCalendarGraphDaysInWeek = 7;
     return _dataByColumns;
 }
 
+- (CGSize)contentSize
+{
+    return CGSizeMake(CGRectGetWidth([self frameForViewInBounds]), CGRectGetHeight([self frameForViewInBounds]));
+}
+
 #pragma mark - Public methods
 
 - (void)reloadData
@@ -220,6 +225,11 @@ const NSInteger EFCalendarGraphDaysInWeek = 7;
     
     self.layers = [layers copy];
     self.layersByColumns = [layersByColumns copy];
+    
+    if (self.automaticallyAdjustsFrameToContent)
+    {
+        self.frame = CGRectMake(CGRectGetMinX(self.frame), CGRectGetMinY(self.frame), self.contentSize.width, self.contentSize.height);
+    }
 }
 
 #pragma mark - Helpers
